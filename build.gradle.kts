@@ -35,6 +35,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-core")
 
     implementation("org.hibernate.validator:hibernate-validator")
