@@ -28,6 +28,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -36,8 +37,12 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     implementation("org.flywaydb:flyway-core")
 
+    implementation("org.hibernate.validator:hibernate-validator")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.assertj:assertj-core:3.18.0")
+    testImplementation("com.nhaarman:mockito-kotlin:1.6.0")
 }
 
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {

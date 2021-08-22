@@ -1,7 +1,7 @@
 create table users(
     id serial primary key,
-    name varchar not null,
-    email varchar unique not null,
+    username varchar unique not null,
+    email_address varchar not null,
     password varchar not null
 );
 
@@ -10,6 +10,6 @@ create table posts(
     title varchar not null,
     content varchar not null,
     created_on timestamp not null,
-    updated_on timestamp not null,
+    updated_on timestamp,
     author_id int not null references users(id)
 );
