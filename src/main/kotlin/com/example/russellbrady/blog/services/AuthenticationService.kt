@@ -7,6 +7,7 @@ import com.example.russellbrady.blog.repositories.UserRepository
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 import javax.validation.Valid
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -42,8 +43,11 @@ class AuthenticationServiceImpl(
     }
 
     override fun getUserLoggedIn(): User {
-        val authentication = SecurityContextHolder.getContext().authentication.principal as UserDetails
-        return userRepository.findByUsername(authentication.username)
-            ?: throw EntityNotFoundException("User with username ${authentication.username} does not exist")
+        val principal = SecurityContextHolder.getContext().authentication.principal
+        val userDetails = if (principal is UserDetails) principal else
+            throw AuthenticationCredentialsNotFoundException("No user is currently logged in")
+
+        return userRepository.findByUsername(userDetails.username)
+            ?: throw EntityNotFoundException("User with username ${userDetails.username} does not exist")
     }
 }

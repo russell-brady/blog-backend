@@ -7,6 +7,7 @@ import javax.persistence.EntityNotFoundException
 import javax.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -34,18 +35,26 @@ class RestControllerExceptionAdvice(
         )
     }
 
+    @ExceptionHandler(AuthenticationException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun handleAuthenticationException(ex: AuthenticationException): ResponseEntity<RestApiErrorDto> {
+        return ResponseEntity(
+            RestApiErrorDto(HttpStatus.UNAUTHORIZED, ex.localizedMessage, timeService.nowDateTime()),
+            HttpStatus.UNAUTHORIZED
+        )
+    }
+
     @ExceptionHandler(ConstraintViolationException::class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     fun handleConstraintViolationException(ex: ConstraintViolationException): ResponseEntity<RestApiErrorDto> {
-        val statusCode = HttpStatus.UNPROCESSABLE_ENTITY
         val restApiError = RestApiErrorDto(
-            statusCode,
+            HttpStatus.UNPROCESSABLE_ENTITY,
             "Constraint Violations",
             timeService.nowDateTime(),
             ex.constraintViolations.map {
                 ApiSubErrorDto(it.rootBeanClass.name, it.propertyPath.toString(), it.invalidValue, it.message)
             }
         )
-        return ResponseEntity(restApiError, statusCode)
+        return ResponseEntity(restApiError, HttpStatus.UNPROCESSABLE_ENTITY)
     }
 }
