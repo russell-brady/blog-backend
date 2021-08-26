@@ -66,7 +66,7 @@ class AuthenticationControllerTests : BaseControllerTest() {
         perform(post("$baseUrl/login")
             .content(invalidLoginForm.toJson())
             .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isForbidden)
+        ).andExpect(status().isUnauthorized)
     }
 
     @Test
