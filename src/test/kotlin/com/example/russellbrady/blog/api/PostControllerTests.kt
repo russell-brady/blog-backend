@@ -11,14 +11,12 @@ import com.example.russellbrady.blog.utils.toObjectList
 import java.time.LocalDateTime
 import javax.persistence.EntityManager
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
-import org.springframework.test.annotation.Rollback
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
@@ -38,16 +36,7 @@ class PostControllerTests : BaseControllerTest() {
     @Autowired
     lateinit var entityManager: EntityManager
 
-    lateinit var user: User
-    lateinit var post: Post
     val now = LocalDateTime.now()
-
-    @BeforeEach
-    @Rollback(value = false)
-    fun beforeAll() {
-        user = createUser("user")
-        post = postRepository.save(Post(PostForm("title", "content"), user, now))
-    }
 
     @Test
     @WithMockUser
@@ -80,6 +69,7 @@ class PostControllerTests : BaseControllerTest() {
 
     @Test
     fun `createPost - Should create a post with the given form fields`() {
+        val user = createUser("user")
         val postForm = PostForm("title", "content")
 
         perform(
@@ -93,6 +83,7 @@ class PostControllerTests : BaseControllerTest() {
 
     @Test
     fun `createPost - Should not create post - When invalid from fields`() {
+        val user = createUser("user")
         val postForm = PostForm("", null)
 
         perform(
@@ -105,6 +96,8 @@ class PostControllerTests : BaseControllerTest() {
 
     @Test
     fun `updatePost - Should return unauthorized - when logged in user doesn't own post for given id`() {
+        val user = createUser("user")
+        val post = postRepository.save(Post(PostForm("title", "content"), user, now))
         val userWithNoPosts = createUser("other user")
         val patchForm = PostForm("new title", "new content")
 
@@ -118,6 +111,8 @@ class PostControllerTests : BaseControllerTest() {
 
     @Test
     fun `updatePost - Should update post for a given id with new fields from Form`() {
+        val user = createUser("user")
+        val post = postRepository.save(Post(PostForm("title", "content"), user, now))
         val patchForm = PostForm("new title", "new content")
 
         perform(
@@ -134,6 +129,9 @@ class PostControllerTests : BaseControllerTest() {
 
     @Test
     fun `deletePost - Should return unauthorized - when logged in user doesn't own the post for a given id`() {
+        val user = createUser("user")
+        val post = postRepository.save(Post(PostForm("title", "content"), user, now))
+
         val userWithNoPosts = createUser("other user")
         perform(delete("${baseUrl(user.username)}/${post.id}").with(user(userWithNoPosts.username)))
             .andExpect(status().isUnprocessableEntity)
@@ -141,6 +139,9 @@ class PostControllerTests : BaseControllerTest() {
 
     @Test
     fun `deletePost - Should delete post for a given id`() {
+        val user = createUser("user")
+        val post = postRepository.save(Post(PostForm("title", "content"), user, now))
+
         perform(delete("${baseUrl(user.username)}/${post.id}").with(user(user.username))).andExpect(status().isOk)
         assertThat(postRepository.findById(post.id)).isEmpty
     }

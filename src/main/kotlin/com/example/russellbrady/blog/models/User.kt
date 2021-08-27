@@ -1,5 +1,6 @@
 package com.example.russellbrady.blog.models
 
+import com.example.russellbrady.blog.dto.UserDto
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -52,4 +53,6 @@ class User(
     override fun toString(): String {
         return "User(id=$id, username='$username', emailAddress='$emailAddress', password='$password', posts=$posts)"
     }
+
+    fun toUserDto() = UserDto(username, emailAddress)
 }

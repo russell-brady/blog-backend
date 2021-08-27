@@ -2,8 +2,10 @@ package com.example.russellbrady.blog.api
 
 import com.example.russellbrady.blog.dto.LoginForm
 import com.example.russellbrady.blog.dto.RegistrationForm
+import com.example.russellbrady.blog.dto.UserDto
 import com.example.russellbrady.blog.services.AuthenticationService
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,5 +25,10 @@ class AuthenticationController(
     @PostMapping("/login")
     fun login(@RequestBody loginForm: LoginForm): ResponseEntity<Unit> {
         return authenticationService.login(loginForm).let { ResponseEntity.ok().build() }
+    }
+
+    @GetMapping("/me")
+    fun getMe(): ResponseEntity<UserDto> {
+        return authenticationService.getUserLoggedIn().let { ResponseEntity.ok(it.toUserDto()) }
     }
 }
